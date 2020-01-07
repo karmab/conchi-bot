@@ -1,0 +1,70 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: conchibot
+    name: conchibot
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: karmab/conchibot:latest
+      from:
+        kind: DockerImage
+        name: karmab/conchibot:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: conchibot
+    name: conchibot
+  spec:
+    replicas: 1
+    selector:
+      app: conchibot
+      deploymentconfig: conchibot
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        annotations:
+          openshift.io/container.conchibot.image.entrypoint: '["python","-u","/conchibot.py"]'
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: conchibot
+          deploymentconfig: conchibot
+      spec:
+        containers:
+        - image: karmab/conchibot:latest
+          name: conchibot
+          env:
+          - name: TOKEN
+            value: token
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - conchibot
+        from:
+          kind: ImageStreamTag
+          name: conchibot:latest
+      type: ImageChange
+  status: {}
+kind: List
+metadata: {}
